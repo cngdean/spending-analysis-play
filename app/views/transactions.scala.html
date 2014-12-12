@@ -1,0 +1,26 @@
+@(message: String, txns: List[models.Transaction])
+
+
+@main("test") {
+<script>
+    $(function() {
+    	$("#reportsNav").removeClass("active");
+    	$("#transactionsNav").addClass("active");
+        $("#categoriesNav").removeClass("active");
+    });
+</script>
+
+
+<table class="table">
+	<th>Note</th><th>Memo</th><th>Amount</th><th>Category</th>
+	@for(transaction <- txns) {
+		<tr>
+			<td>@transaction.note</td>
+			<td>@transaction.memo</td>
+			<td>@transaction.amount</td>
+			<td>@transaction.category.categoryName</td>
+		</tr>
+	}
+</table>
+
+}

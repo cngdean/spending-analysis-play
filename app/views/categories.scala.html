@@ -1,0 +1,24 @@
+@(message: String, cats: List[models.Category])
+
+
+@main("test") {
+
+<script>
+    $(function() {
+    	$("#reportsNav").removeClass("active");
+    	$("#transactionsNav").removeClass("active");
+        $("#categoriesNav").addClass("active");
+    });
+</script>
+
+<table class="table">
+	<th>Name</th><th>Regex</th>
+	@for(cat <- cats) {
+		<tr>
+			<td>@cat.categoryName</td>
+			<td>@cat.regex</td>
+		</tr>
+	}
+</table>
+
+}

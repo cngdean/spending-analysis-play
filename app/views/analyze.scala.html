@@ -1,0 +1,111 @@
+@(message: String, qfxfileLocation: String, regexFile: String)
+
+@main("test") {
+<script>
+    $(function() {
+        $("#reportsNav").addClass("active");
+        $("#transactionsNav").removeClass("active");
+        $("#categoriesNav").removeClass("active");
+    });
+</script>
+
+<script>
+
+
+$(document).ready(function() {
+
+
+    	var options = {
+            chart: {
+                renderTo: 'container',
+                type: 'column'
+                
+            },
+            title: {text: 'Spending by month'},
+            xAxis: [{
+                	categories: []
+                }],
+            series: [{}]
+        };
+
+        jQuery.getJSON("/transactions.json", function(data) {
+        	var arr = [];
+        	var cats = [];
+
+            $.each(data, function(key, val) {
+                //arr.push({x: new Date(val.date), y: val.amount})
+                console.log(val.amount)
+                arr.push([val.date, parseInt(val.amount)])
+                cats.push(val.date)
+            });
+
+            console.log(cats)
+			options.xAxis.categories = cats;
+            
+            options.series[0].data = arr;
+            var chart = new Highcharts.Chart(options);
+        });
+
+        var v_piechart = {
+	        chart: {
+                plotBackgroundColor: null,
+                plotShadow: false,
+                renderTo: 'piechart'
+            },
+            title: {
+                text: 'Spending By Category'
+            },
+            tooltip: {
+                pointFormat: '{series.label} ${point.y}</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        }
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Category'
+            }]
+        };
+
+        jQuery.getJSON("/categoryTxns.json", function(data) {
+
+            console.log(data)
+        	var arr = []
+
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i]
+                arr.push([row[0], parseInt(row[1])])
+            }
+
+            console.log(arr)
+
+            //var arr_that_works = [["gooey", 400],["grocery", 500],["coffee", 1250]]
+
+            v_piechart.series[0].data = arr
+            var chart = new Highcharts.Chart(v_piechart)
+
+            
+        });
+	});
+</script>
+<li>QFX/OFX File Location: @qfxfileLocation
+<li>Regular Expression File For Categories: @regexFile
+
+
+
+<div id="piechart"></div>
+<div id="container"></div>
+<div id="columnChart"></div>
+
+
+}
+

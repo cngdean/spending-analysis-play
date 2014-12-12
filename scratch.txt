@@ -1,0 +1,24 @@
+arr.push({x: 3, y: val.amount})
+
+		var jsonURL = '/transactions.json';
+		jQuery.getJSON(jsonURL, function(data) {
+			var arr = [];
+			var tot = 0.0;
+			$.each(data, function(key, val) {
+				tot = tot + val.total;
+				arr.push({
+					x : new Date(val.date),
+					y : tot
+				})
+			});
+
+			var series = {
+				data : arr
+			};
+			series.type = 'bar';
+			series.name = 'TransactionSeries?';
+			columnChart.setData(series);
+		});
+
+		
+		

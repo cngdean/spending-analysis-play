@@ -1,0 +1,5 @@
+Coffee||(starbucks|pete).*||N
+Kitty||(petsmart|petco).*||N
+Clothes||(modcloth|dillard|macy).*||N
+Shoes||(Zappos).*||N
+ExcludeMe||(Exclude).*||Y

@@ -38,9 +38,9 @@ object Application extends Controller {
     val worksJS = Json.toJson(fakeTxns);
         
     var txns = ProcessFiles.processDirectory(directory, regexFile) //.filter(_.month > "2014-01")
-    val txnMap = TransactionSummary.spendingByMonthJSON(txns)
+    val txnMap = TransactionSummary.splitByMonth(txns)
 
-    val realJS = Json.toJson(txnMap)
+    val realJS = Json.toJson(txnMap.map( x => List(x._1, x._2.toString) ))
 
     Ok(realJS);
   }

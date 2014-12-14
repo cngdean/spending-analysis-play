@@ -32,12 +32,16 @@ $(document).ready(function() {
         	var arr = [];
         	var cats = [];
 
-            $.each(data, function(key, val) {
-                //arr.push({x: new Date(val.date), y: val.amount})
-                console.log(val.amount)
-                arr.push([val.date, parseInt(val.amount)])
-                cats.push(val.date)
-            });
+//            $.each(data, function(key, val) {
+//                //arr.push({x: new Date(val.date), y: val.amount})
+//                console.log(val.amount)
+//                arr.push([val.date, parseInt(val.amount)])
+//                cats.push(val.date)
+//            });
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i]
+                arr.push([row[0], parseInt(row[1])])
+            }
 
             console.log(cats)
 			options.xAxis.categories = cats;

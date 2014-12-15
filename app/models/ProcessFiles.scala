@@ -19,10 +19,22 @@ object ProcessFiles {
       }
 
       val qfxFiles = recursiveListFiles(new File(directory)).filter(_.getName.endsWith(".qfx"))
-      qfxFiles.map(_.getAbsolutePath).map(process(_, regexfile)).flatten.toList
+      val qList = qfxFiles.map(_.getAbsolutePath).map(processQfx(_, regexfile)).flatten.toList
+
+      val csvFiles = recursiveListFiles(new File(directory)).filter(_.getName.endsWith(".csv"))
+      val cList = csvFiles.map(_.getAbsolutePath).map(processCsv(_, regexfile)).flatten.toList
+      qList ::: cList
     }
 
-  def process(filename: String, regexfile: String):List[Transaction] = {
+  def processCsv(filename: String, regexfile: String):List[Transaction] = {
+    val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
+    val catMapper = CategoryMapper(regexfile)
+
+    for (line <- scala.io.Source.fromFile(filename).getLines.toList; values: Array[String] = line.split(","))
+      yield Transaction(line, values(4), "", BigDecimal(values(1)), dateFormat.parse(values(0)), catMapper.findCategory(values(4)))
+  }
+
+  def processQfx(filename: String, regexfile: String):List[Transaction] = {
     val reader = new NanoXMLOFXReader
 
     val txns = scala.collection.mutable.ListBuffer.empty[Transaction]

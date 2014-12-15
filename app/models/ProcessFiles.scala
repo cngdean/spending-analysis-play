@@ -30,8 +30,10 @@ object ProcessFiles {
     val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
     val catMapper = CategoryMapper(regexfile)
 
-    for (line <- scala.io.Source.fromFile(filename).getLines.toList; values: Array[String] = line.split(","))
+    val txns = for (line <- scala.io.Source.fromFile(filename).getLines.toList; values: Array[String] = line.split(","))
       yield Transaction(line, values(4), "", BigDecimal(values(1)), dateFormat.parse(values(0)), catMapper.findCategory(values(4)))
+    // dedupe by txn id
+    txns.sortBy( _.id ).groupBy{_.id}.map{_._2.head}.toList
   }
 
   def processQfx(filename: String, regexfile: String):List[Transaction] = {

@@ -11,11 +11,19 @@ class TransactionSpec extends Specification {
       tp.tail.head.amount must === (BigDecimal("-29.31"))
     }
 
-    "have a transaction in directories" in {
+    "have a qfx transaction in directories" in {
       val tp = ProcessFiles.processDirectory("test/resources/", "test/resources/test_regexfile.txt")
       val t = tp.head
       t.amount must === (BigDecimal("-90.00"))
       tp.tail.head.amount must === (BigDecimal("-29.31"))
+    }
+
+    "have a csv transaction in directories" in {
+      val tp = ProcessFiles.processCsv("test/resources/test_csvFile.csv", "test/resources/test_regexfile.txt")
+      val t = tp.head
+      t.amount must === (BigDecimal("-335.98"))
+      tp.tail.head.amount must === (BigDecimal("-25.85"))
+      tp.size must === (3)
     }
 
     "ignore excluded category transactions" in {

@@ -11,6 +11,8 @@ import java.util.{Calendar, Date}
  */
 object ProcessFiles {
 
+  def dedupe(txns: List[Transaction]):List[Transaction] = txns.sortBy( _.id ).groupBy{_.id}.map{_._2.head}.toList
+
   def processDirectory(directory: String, regexfile: String):List[Transaction] = {
       import java.io.File
       def recursiveListFiles(f: File): Array[File] = {
@@ -23,7 +25,7 @@ object ProcessFiles {
 
       val csvFiles = recursiveListFiles(new File(directory)).filter(_.getName.endsWith(".csv"))
       val cList = csvFiles.map(_.getAbsolutePath).map(processCsv(_, regexfile)).flatten.toList
-      qList ::: cList
+      dedupe( qList ::: cList )
     }
 
   def processCsv(filename: String, regexfile: String):List[Transaction] = {
@@ -33,7 +35,7 @@ object ProcessFiles {
     val txns = for (line <- scala.io.Source.fromFile(filename).getLines.toList; values: Array[String] = line.split(","))
       yield Transaction(line, values(4), "", BigDecimal(values(1)), dateFormat.parse(values(0)), catMapper.findCategory(values(4)))
     // dedupe by txn id
-    txns.sortBy( _.id ).groupBy{_.id}.map{_._2.head}.toList
+    dedupe(txns)
   }
 
   def processQfx(filename: String, regexfile: String):List[Transaction] = {
@@ -82,7 +84,7 @@ object ProcessFiles {
     reader.setContentHandler(handle)
     reader.parse(new java.io.FileInputStream(filename))
     // dedupe by txn id
-    txns.sortBy( _.id ).groupBy{_.id}.map{_._2.head}.toList
+    dedupe(txns.toList)
   }
 
 }

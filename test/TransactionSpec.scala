@@ -23,6 +23,7 @@ class TransactionSpec extends Specification {
       val t = tp.head
       t.amount must === (BigDecimal("-335.98"))
       tp.tail.head.amount must === (BigDecimal("-25.85"))
+      // de dupe test
       tp.size must === (3)
     }
 

@@ -2,17 +2,33 @@
 
 
 @main("test") {
-<script>
+
+	<link rel="stylesheet" href="http://cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css">
+	<script src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+
+
+	<script>
     $(function() {
     	$("#reportsNav").removeClass("active");
     	$("#transactionsNav").addClass("active");
         $("#categoriesNav").removeClass("active");
     });
+
+	$(document).ready(function(){
+		$('#txnTable').DataTable();
+	});
 </script>
 
 
-<table class="table">
-	<th>Note</th><th>Memo</th><th>Amount</th><th>Category</th>
+<table class="table" id="txnTable">
+	<thead>
+		<tr>
+			<th>Note</th>
+			<th>Memo</th>
+			<th>Amount</th>
+			<th>Category</th>
+		</tr>
+	</thead>
 	@for(transaction <- txns) {
 		<tr>
 			<td>@transaction.note</td>

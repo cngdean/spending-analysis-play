@@ -14,8 +14,8 @@ class TransactionSpec extends Specification {
     "have a qfx transaction in directories" in {
       val tp = ProcessFiles.processDirectory("test/resources/", "test/resources/test_regexfile.txt")
       val t = tp.head
-      t.amount must === (BigDecimal("-90.00"))
-      tp.tail.head.amount must === (BigDecimal("-29.31"))
+      t.amount must === (BigDecimal("-29.31"))
+      tp.tail.head.amount must === (BigDecimal("-25.85"))
     }
 
     "have a csv transaction in directories" in {

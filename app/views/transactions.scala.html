@@ -27,6 +27,8 @@
 			<th>Memo</th>
 			<th>Amount</th>
 			<th>Category</th>
+			<th>ID</th>
+			<th>Source</th>
 		</tr>
 	</thead>
 	@for(transaction <- txns) {
@@ -35,6 +37,8 @@
 			<td>@transaction.memo</td>
 			<td>@transaction.amount</td>
 			<td>@transaction.category.categoryName</td>
+			<td>@transaction.id</td>
+			<td>@transaction.source</td>
 		</tr>
 	}
 </table>

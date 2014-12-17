@@ -33,7 +33,7 @@ object ProcessFiles {
     val catMapper = CategoryMapper(regexfile)
 
     val txns = for (line <- scala.io.Source.fromFile(filename).getLines.toList; values: Array[String] = line.split(","))
-      yield Transaction(line, values(4), "", BigDecimal(values(1)), dateFormat.parse(values(0)), catMapper.findCategory(values(4)))
+      yield Transaction(line.toLowerCase.replaceAll(" ", ""), values(4), "", BigDecimal(values(1)), dateFormat.parse(values(0)), catMapper.findCategory(values(4)), filename)
     // dedupe by txn id
     dedupe(txns)
   }
@@ -65,7 +65,7 @@ object ProcessFiles {
         if ("STMTTRN" == s) {
           val category = catMapper.findCategory(note)
           if (!category.exclude)
-            txns += Transaction(id, note, memo, amount, date, category)
+            txns += Transaction(id, note, memo, amount, date, category, filename)
         }
       }
 

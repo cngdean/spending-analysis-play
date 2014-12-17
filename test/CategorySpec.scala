@@ -20,6 +20,10 @@ class CategorySpec extends Specification {
 
     }
 
+  "map to no catgegory" in {
+    val catMapper = CategoryMapper("test/resources/test_regexfile.txt")
+    catMapper.findCategory("unkown").categoryName must startWith ("Needs Category")
+  }
 
 
 }

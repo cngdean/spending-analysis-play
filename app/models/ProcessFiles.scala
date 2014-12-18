@@ -29,13 +29,19 @@ object ProcessFiles {
     }
 
   def processCsv(filename: String, regexfile: String):List[Transaction] = {
-    val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
-    val catMapper = CategoryMapper(regexfile)
+    try  {
+      val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
+      val catMapper = CategoryMapper(regexfile)
 
-    val txns = for (line <- scala.io.Source.fromFile(filename).getLines.toList; values: Array[String] = line.split(","))
-      yield Transaction(line.toLowerCase.replaceAll(" ", ""), values(4), "", BigDecimal(values(1)), dateFormat.parse(values(0)), catMapper.findCategory(values(4)), filename)
-    // dedupe by txn id
-    dedupe(txns)
+      val txns = for (line <- scala.io.Source.fromFile(filename).getLines.toList; values: Array[String] = line.split(","))
+        yield Transaction(line.toLowerCase.replaceAll(" ", ""), values(4), "", BigDecimal(values(1)), dateFormat.parse(values(0)), catMapper.findCategory(values(4)), filename)
+      // dedupe by txn id
+      dedupe(txns)
+    }
+      catch {
+        case _ => println("Error handling file: " + filename)
+          return Nil
+      }
   }
 
   def processQfx(filename: String, regexfile: String):List[Transaction] = {

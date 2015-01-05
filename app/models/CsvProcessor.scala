@@ -23,10 +23,31 @@ object CsvProcessor {
 
   case class Processor(fields: List[CsvField])
 
+  val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
+
+  def nextTxn(filename: String, lines: List[String], regexfile: String):List[Transaction] = {
+    if (lines.isEmpty) Nil
+    else {
+      def line = lines.head.replaceAll(""""""", "")
+      def values: Array[String] = line.split(",")
+      try {
+        def id = line.toLowerCase.replaceAll(" ", "")
+        def note = values(3)
+        def memo = ""
+        def amount = BigDecimal(values(1))
+        def date = dateFormat.parse(values(0))
+        def category = CategoryMapper(regexfile).findCategory(note)
+        Transaction(id, note, memo, amount, date, category, filename) :: nextTxn(filename, lines.tail, regexfile)
+      }
+      catch {
+        case e:Exception => println("Error handling file: " + filename + "line:\n\t" + line + " " + e + " " + (values mkString " "))
+          nextTxn(filename, lines.tail, regexfile)
+      }
+    }
+  }
+
   def process(process: Processor, filename: String, regexfile: String): List[Transaction] = {
     try {
-      val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
-      val catMapper = CategoryMapper(regexfile)
 
       val txns = for {
         line <- scala.io.Source.fromFile(filename).getLines.toList
@@ -36,7 +57,7 @@ object CsvProcessor {
         memo = ""
         amount = BigDecimal(values(1))
         date = dateFormat.parse(values(0))
-        category = catMapper.findCategory(values(4))
+        category = CategoryMapper(regexfile).findCategory(values(4))
       } yield Transaction(id, note, memo, amount, date, category, filename)
 
       ProcessFiles.dedupe(txns)

@@ -31,16 +31,23 @@ object CsvProcessor {
       def line = lines.head.replaceAll(""""""", "")
       def values: Array[String] = line.split(",")
       try {
-        def id = line.toLowerCase.replaceAll(" ", "")
-        def note = values(3)
-        def memo = ""
-        def amount = BigDecimal(values(1))
-        def date = dateFormat.parse(values(0))
-        def category = CategoryMapper(regexfile).findCategory(note)
-        Transaction(id, note, memo, amount, date, category, filename) :: nextTxn(filename, lines.tail, regexfile)
+        if (values.length < 4) {
+          println("Not enough values")
+          nextTxn(filename, lines.tail, regexfile)
+        }
+        else {
+          println("Note: " + values(3) + " amount: " + values(1) + " date: " + values(0))
+          def id = line.toLowerCase.replaceAll(" ", "")
+          def note = values(3)
+          def memo = ""
+          def amount = BigDecimal(values(1))
+          def date = dateFormat.parse(values(0))
+          def category = CategoryMapper(regexfile).findCategory(note)
+          Transaction(id, note, memo, amount, date, category, filename) :: nextTxn(filename, lines.tail, regexfile)
+        }
       }
       catch {
-        case e:Exception => println("Error handling file: " + filename + "line:\n\t" + line + " " + e + " " + (values mkString " "))
+        case e:Exception => println("Error handling file: " + filename + "line:\n\t" + line + " " + e + " " + (values(1)))
           nextTxn(filename, lines.tail, regexfile)
       }
     }

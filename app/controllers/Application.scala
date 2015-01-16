@@ -1,6 +1,6 @@
 package controllers
 
-import models.{TransactionSummary, ProcessFiles}
+import models.{TransactionSummary, ProcessFiles, Transaction}
 import play.api._
 import play.api.mvc._
 import play.api.libs.json.Json
@@ -10,6 +10,7 @@ object Application extends Controller {
   val regexFile = System.getProperty("user.home") + "/qfx/regexconfig.txt"
   val directory = System.getProperty("user.home") + "/qfx/"
 
+  def nonIgnoredTxns(t: List[Transaction]):List[Transaction] = t.filter(! _.category.exclude)
 
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
@@ -20,7 +21,8 @@ object Application extends Controller {
   }
 
   def transactions = Action {
-    var txns = ProcessFiles.processDirectory(directory, regexFile)
+    var txns = nonIgnoredTxns( ProcessFiles.processDirectory(directory, regexFile) )
+
     Ok(views.html.transactions("transactions", txns))
   }
 
@@ -37,7 +39,7 @@ object Application extends Controller {
         Map("date" -> "2014-09-04", "amount" -> "333") )
     val worksJS = Json.toJson(fakeTxns);
         
-    var txns = ProcessFiles.processDirectory(directory, regexFile) //.filter(_.month > "2014-01")
+    var txns = nonIgnoredTxns( ProcessFiles.processDirectory(directory, regexFile) ) //.filter(_.month > "2014-01")
     val txnMap = TransactionSummary.splitByMonth(txns)
 
     val realJS = Json.toJson(txnMap.map( x => List(x._1, x._2.toString) ))
@@ -56,7 +58,7 @@ object Application extends Controller {
 //            List("clothes", "133.50"),
 //            List("other", "333.50"))
         
-    val byCat = TransactionSummary.spendingByCategory(ProcessFiles.processDirectory(directory, regexFile))
+    val byCat = TransactionSummary.spendingByCategory(nonIgnoredTxns(ProcessFiles.processDirectory(directory, regexFile)))
     val by2 = for ( (cat, amount) <- byCat) yield List(cat.categoryName, Math.abs(amount.toInt).toString)
 
     val restJs = Json.toJson(by2);

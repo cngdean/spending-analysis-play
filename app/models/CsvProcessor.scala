@@ -31,14 +31,15 @@ object CsvProcessor {
       def line = lines.head.replaceAll(""""""", "")
       def values: Array[String] = line.split(",")
       try {
-        if (values.length < 4) {
+        println("\n" + values.mkString("|"))
+        if (values.length < 5) {
           println("Not enough values")
           nextTxn(filename, lines.tail, regexfile)
         }
         else {
-          println("Note: " + values(3) + " amount: " + values(1) + " date: " + values(0))
+          println("Note: " + values(4) + " amount: " + values(1) + " date: " + values(0))
           def id = line.toLowerCase.replaceAll(" ", "")
-          def note = values(3)
+          def note = values(4)
           def memo = ""
           def amount = BigDecimal(values(1))
           def date = dateFormat.parse(values(0))
